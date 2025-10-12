@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-light: #f6f7fb;
+            --bg-dark: #181c25;
+            --primary: #4f8cff;
+            --primary-dark: #3a6fd8;
+            --input-bg-light: #fff;
+            --input-bg-dark: #181c25;
+            --text-light: #23272f;
+            --text-dark: #f6f7fa;
+            --border: #e3e5e8;
+            --shadow: 0 4px 24px rgba(79,140,255,0.10);
+        }
+        body {
+            background: var(--bg-light);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            transition: background 0.3s, color 0.3s;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--primary);
+            user-select: none;
+            background: none;
+            border: none;
+            padding: 0.3rem 0.7rem;
+        }
+        .container {
+            background: var(--input-bg-light);
+            padding: 2.5rem 2rem 2rem 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 3rem auto 0 auto;
+            align-items: center;
+            position: relative;
+        }
+        .exit-arrow {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            background: none;
+            border: none;
+            outline: none;
+            z-index: 11;
+        }
+        .avatar {
+            display: block;
+            margin: 0 auto 18px auto;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #e1e1e1;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+        }
+        .fields {
+            margin-bottom: 24px;
+            width: 100%;
+        }
+        .field-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            width: 100%;
+        }
+        .field-label {
+            flex: 0 0 90px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        .field-value {
+            flex: 1;
+            padding: 7px 12px;
+            background: #f0f4ff;
+            border-radius: 6px;
+            margin-right: 8px;
+            font-size: 15px;
+            color: #222;
+            border: 1px solid var(--border);
+        }
+        .update-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+        }
+        .update-btn:hover {
+            background: var(--primary-dark);
+        }
+        .delete-btn {
+            background: #e53935;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 0;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+        }
+        .delete-btn:hover {
+            background: #b71c1c;
+        }
+        .popup, .update-popup {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.25);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .popup-content, .update-popup-content {
+            background: #fff;
+            padding: 28px 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+            text-align: center;
+            min-width: 260px;
+        }
+        .popup-btn, .update-popup-btn {
+            margin: 18px 10px 0 10px;
+            padding: 8px 22px;
+            border-radius: 5px;
+            border: none;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .popup-btn.yes {
+            background: #e53935;
+            color: #fff;
+        }
+        .popup-btn.no, .update-popup-btn.cancel {
+            background: #f0f0f0;
+            color: #222;
+        }
+        .update-popup-btn.save {
+            background: var(--primary);
+            color: #fff;
+        }
+        .update-popup-field {
+            width: 90%;
+            padding: 8px 10px;
+            margin: 18px 0 0 0;
+            border-radius: 6px;
+            border: 1.5px solid var(--border);
+            font-size: 1rem;
+        }
+        @media (max-width: 500px) {
+            .container {
+                max-width: 98vw;
+                padding: 18px 6vw 18px 6vw;
+            }
+            .theme-toggle {
+                top: 0.7rem;
+                right: 0.7rem;
+            }
+        }
+        /* Dark theme */
+        body.dark {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+        body.dark .container {
+            background: var(--input-bg-dark);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+        }
+        body.dark .field-value {
+            background: #23283a;
+            color: #f6f7fa;
+            border-color: #353945;
+        }
+        body.dark .field-label {
+            color: #8ab4f8;
+        }
+        body.dark .update-btn {
+            background: #8ab4f8;
+            color: #23272f;
+        }
+        body.dark .update-btn:hover {
+            background: #4f8cff;
+            color: #fff;
+        }
+        body.dark .delete-btn {
+            background: #e53935;
+            color: #fff;
+        }
+        body.dark .popup-content, body.dark .update-popup-content {
+            background: #23283a;
+            color: #f6f7fa;
+        }
+        body.dark .popup-btn.no, body.dark .update-popup-btn.cancel {
+            background: #353945;
+            color: #f6f7fa;
+        }
+        body.dark .update-popup-btn.save {
+            background: #8ab4f8;
+            color: #23272f;
+        }
+        body.dark .update-popup-field {
+            background: #23283a;
+            color: #f6f7fa;
+            border-color: #353945;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        🌙
+    </button>
+    <div class="container">
+        <button class="exit-arrow" onclick="window.location.href='/'" title="Go Back">
+            <svg width="28" height="28" viewBox="0 0 28 28">
+                <polyline points="18,6 10,14 18,22" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <img src="/static/avatar.png" alt="Avatar" class="avatar">
+        <div class="fields">
+            <div class="field-row">
+                <span class="field-label">Username</span>
+                <span class="field-value" id="username">{{ username }}</span>
+                <button class="update-btn" onclick="showUpdatePopup('username')">Update</button>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Password</span>
+                <span class="field-value" id="password">{{ password }}</span>
+                <button class="update-btn" onclick="showUpdatePopup('password')">Update</button>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Email</span>
+                <span class="field-value" id="email">{{ email }}</span>
+                <button class="update-btn" onclick="showUpdatePopup('email')">Update</button>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Job</span>
+                <span class="field-value" id="job">{{ job }}</span>
+                <button class="update-btn" onclick="showUpdatePopup('job')">Update</button>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Role</span>
+                <span class="field-value" id="role">{{ role }}</span>
+                <button class="update-btn" onclick="showUpdatePopup('role')">Update</button>
+            </div>
+        </div>
+        <button class="delete-btn" onclick="showDeletePopup()">Delete Account</button>
+    </div>
+    <!-- Delete confirmation popup -->
+    <div class="popup" id="deletePopup">
+        <div class="popup-content">
+            <div>Are you sure you want to delete your account?</div>
+            <button class="popup-btn yes" onclick="confirmDelete()">Yes</button>
+            <button class="popup-btn no" onclick="hideDeletePopup()">No</button>
+        </div>
+    </div>
+    <!-- Update field popup -->
+    <div class="update-popup" id="updatePopup">
+        <div class="update-popup-content">
+            <div id="updateLabel">Update</div>
+            <input type="text" class="update-popup-field" id="updateInput" />
+            <button class="update-popup-btn save" onclick="saveUpdate()">Save</button>
+            <button class="update-popup-btn cancel" onclick="hideUpdatePopup()">Cancel</button>
+        </div>
+    </div>
+    <script>
+        // Theme toggle logic
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        function setTheme(dark) {
+            if (dark) {
+                body.classList.add('dark');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setTheme(savedTheme === 'dark' || (!savedTheme && prefersDark));
+        themeToggle.addEventListener('click', () => {
+            const isDark = !body.classList.contains('dark');
+            setTheme(isDark);
+        });
+
+        // Delete popup logic
+        function showDeletePopup() {
+            document.getElementById('deletePopup').style.display = 'flex';
+        }
+        function hideDeletePopup() {
+            document.getElementById('deletePopup').style.display = 'none';
+        }
+        function confirmDelete() {
+            hideDeletePopup();
+            alert('Account deleted!');
+            // Implement delete logic here
+        }
+
+        // Update popup logic
+        let currentField = '';
+        function showUpdatePopup(field) {
+            currentField = field;
+            document.getElementById('updateLabel').textContent = 'Update ' + field.charAt(0).toUpperCase() + field.slice(1);
+            const value = document.getElementById(field).textContent;
+            document.getElementById('updateInput').value = field === 'password' ? '' : value;
+            document.getElementById('updatePopup').style.display = 'flex';
+            document.getElementById('updateInput').focus();
+        }
+        function hideUpdatePopup() {
+            document.getElementById('updatePopup').style.display = 'none';
+        }
+        async function saveUpdate() {
+            const newValue = document.getElementById('updateInput').value;
+            if (currentField) {
+                document.getElementById(currentField).textContent = currentField === 'password' ? '••••••••' : newValue;
+            }
+            hideUpdatePopup();
+            alert('Updated ' + currentField + '!');
+            // Implement update logic here (AJAX or form submission)
+
+            update_data = {change: currentField, newValue: newValue};
+
+            const response = await fetch('/home/profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(update_data)
+            })
+            window.location.href = response.url
+        }
+    </script>
+</body>
+</html>

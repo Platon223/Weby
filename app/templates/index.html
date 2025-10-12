@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot WebApp - Home</title>
+    <style>
+        :root {
+            --bg-light: #f5f6fa;
+            --bg-dark: #18191a;
+            --text-light: #222;
+            --text-dark: #f5f6fa;
+            --primary: #4f8cff;
+            --secondary: #222;
+            --navbar-bg-light: #fff;
+            --navbar-bg-dark: #23272f;
+            --footer-bg-light: #eaeaea;
+            --footer-bg-dark: #23272f;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-light);
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Pushes buttons to the right */
+            padding: 0.75rem 2rem;
+            background: var(--navbar-bg-light);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: background 0.3s;
+            gap: 1rem;
+        }
+        body.dark .navbar {
+            background: var(--navbar-bg-dark);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: var(--primary);
+            letter-spacing: 1px;
+            margin-left: 0.5rem; /* Reduce space between hamburger and logo */
+        }
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .navbar-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto; /* Ensures buttons are pushed to the right */
+        }
+        .btn {
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn:hover, .btn:focus {
+            filter: brightness(1.08);
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 4px 16px rgba(79,140,255,0.15);
+            outline: none;
+        }
+        .btn:active {
+            filter: brightness(0.95);
+            transform: scale(0.98);
+            box-shadow: 0 1px 4px rgba(79,140,255,0.10);
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        .theme-toggle {
+            margin-left: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: inherit;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+            padding: 3rem 2rem; /* More padding for breathing room */
+        }
+        .main-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .main-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #666;
+        }
+        body.dark .main-content p {
+            color: #bbb;
+        }
+        .main-content .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        /* Card styles */
+        .card-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin: 2.5rem 0 1.5rem 0;
+            padding: 2rem 1.5rem; /* More padding for card group */
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .card {
+            background: #fff;
+            color: #222;
+            border-radius: 12px;
+            box-shadow: 0 2px 16px rgba(79,140,255,0.08);
+            padding: 2rem 1.5rem;
+            max-width: 320px;
+            min-width: 240px;
+            flex: 1 1 240px;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.7rem;
+            margin: 0 0.5rem;
+            box-sizing: border-box;
+        }
+        .card:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 8px 32px rgba(79,140,255,0.18);
+            background: var(--primary);
+            color: #fff;
+        }
+        body.dark .card {
+            background: #23272f;
+            color: #f5f6fa;
+            box-shadow: 0 2px 16px rgba(79,140,255,0.13);
+        }
+        body.dark .card:hover {
+            background: #4f8cff;
+            color: #fff;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+        .card-desc {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        /* Hamburger menu styles */
+        .hamburger {
+            display: flex; /* Always show hamburger */
+            flex-direction: column;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            margin-right: 1rem;
+            z-index: 1201;
+        }
+        .hamburger span {
+            height: 4px;
+            width: 26px;
+            background: var(--primary);
+            margin: 4px 0;
+            border-radius: 2px;
+            display: block;
+            transition: 0.3s;
+        }
+        /* Side menu styles */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -240px; /* Match negative width to width for full hide */
+            width: 240px;
+            height: 100vh;
+            background: #fff;
+            box-shadow: 2px 0 16px rgba(0,0,0,0.08);
+            z-index: 1200;
+            padding: 2rem 1.5rem;
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: left 0.3s;
+            overflow-y: auto;
+        }
+        .side-menu.open {
+            left: 0;
+            display: flex;
+        }
+        body.dark .side-menu {
+            background: #23272f;
+            color: #f5f6fa;
+        }
+        .side-menu .close-btn {
+            align-self: flex-end;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        /* Footer centering and padding */
+        footer {
+            text-align: center;
+            padding: 1.5rem 0 1.5rem 0;
+            background: var(--footer-bg-light);
+            color: #888;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 1rem;
+            margin-top: 2rem;
+        }
+        body.dark footer {
+            background: var(--footer-bg-dark);
+            color: #bbb;
+        }
+        /* Blur effect */
+        .blurred {
+            filter: blur(5px);
+            pointer-events: none;
+            user-select: none;
+        }
+        @media (max-width: 900px) {
+            .card-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            .card {
+                width: 90%;
+                max-width: 400px;
+            }
+        }
+        @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem;
+            }
+            .main-content h1 {
+                font-size: 2rem;
+            }
+            .side-menu {
+                width: 80vw;
+                min-width: 180px;
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="logo">
+                <img src="https://img.icons8.com/ios-filled/32/4f8cff/chat.png" alt="Logo" style="height:32px;margin-right:10px;">
+                ChatBot
+            </div>
+        </div>
+        <div class="navbar-buttons">
+            <form method="GET" action="{{ url_for('login') }}">
+                <button type="submit" class="btn btn-secondary">Join</button>
+            </form>
+            <button class="btn btn-primary">Try Now</button>
+            <form method="POST" action="{{ url_for('logout') }}" style="display:inline;">
+                <button type="submit" class="btn btn-secondary">Logout</button>
+            </form>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                🌙
+            </button>
+        </div>
+    </nav>
+    <div class="side-menu" id="sideMenu" tabindex="-1">
+        <button class="close-btn" id="closeMenuBtn" aria-label="Close menu">&times;</button>
+        <button class="btn btn-primary" style="width:100%;">Try Now</button>
+        <button class="btn btn-secondary" style="width:100%;">Join</button>
+        <form method="POST" action="{{ url_for('logout') }}" style="width:100%;">
+            <button type="submit" class="btn btn-secondary" style="width:100%;">Logout</button>
+        </form>
+        <a href="#" style="color:var(--primary);font-weight:bold;">About</a>
+        <a href="#" style="color:var(--primary);font-weight:bold;">Contact</a>
+    </div>
+    <main class="main-content" id="mainContent">
+        <h1>Welcome to ChatBot WebApp, {{ username }}</h1>
+        <p>Your intelligent assistant for seamless conversations. Join our community or try the chatbot now!</p>
+        <div class="btn-group">
+            <button class="btn btn-secondary">Join</button>
+            <button class="btn btn-primary">Try Now</button>
+        </div>
+        <div class="card-group">
+            <div class="card">
+                <div class="card-title">What is ChatBot WebApp?</div>
+                <div class="card-desc">
+                    ChatBot WebApp is a modern conversational assistant designed to help you with information, productivity, and more—all in a simple web interface.
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Third-Party Services</div>
+                <div class="card-desc">
+                    We leverage trusted APIs like <strong>OpenAI</strong> for advanced language understanding, ensuring accurate and helpful responses.
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">What Can This Chatbot Do?</div>
+                <div class="card-desc">
+                    From answering questions and summarizing text to helping with code and brainstorming ideas, our chatbot is your versatile digital companion.
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Why Build This Chatbot?</div>
+                <div class="card-desc">
+                    We built this chatbot to make AI assistance accessible, friendly, and useful for everyone—empowering users to get more done, faster.
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        &copy; 2024 ChatBot WebApp. All rights reserved.
+    </footer>
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        function setTheme(dark) {
+            if (dark) {
+                body.classList.add('dark');
+                themeToggle.textContent = '☀️';
+            } else {
+                body.classList.remove('dark');
+                themeToggle.textContent = '🌙';
+            }
+        }
+        const savedTheme = localStorage.getItem('theme');
+        setTheme(savedTheme === 'dark');
+        themeToggle.addEventListener('click', () => {
+            const isDark = !body.classList.contains('dark');
+            setTheme(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        // Hamburger menu logic
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sideMenu = document.getElementById('sideMenu');
+        const closeMenuBtn = document.getElementById('closeMenuBtn');
+        const mainContent = document.getElementById('mainContent');
+        const footer = document.querySelector('footer');
+        const navbar = document.querySelector('.navbar');
+
+        function openMenu() {
+            sideMenu.classList.add('open');
+            mainContent.classList.add('blurred');
+            footer.classList.add('blurred');
+            navbar.classList.add('blurred');
+            document.body.style.overflow = 'hidden';
+            sideMenu.focus();
+        }
+        function closeMenu() {
+            sideMenu.classList.remove('open');
+            mainContent.classList.remove('blurred');
+            footer.classList.remove('blurred');
+            navbar.classList.remove('blurred');
+            document.body.style.overflow = '';
+        }
+        hamburgerBtn.addEventListener('click', openMenu);
+        closeMenuBtn.addEventListener('click', closeMenu);
+        // Close menu on ESC
+        sideMenu.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMenu();
+        });
+        // Optional: click outside menu to close
+        document.addEventListener('click', (e) => {
+            if (
+                sideMenu.classList.contains('open') &&
+                !sideMenu.contains(e.target) &&
+                !hamburgerBtn.contains(e.target)
+            ) {
+                closeMenu();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-light: #f6f7fb;
+            --bg-dark: #181c25;
+            --primary: #4f8cff;
+            --primary-dark: #3a6fd8;
+            --input-bg-light: #fff;
+            --input-bg-dark: #181c25;
+            --text-light: #23272f;
+            --text-dark: #f6f7fa;
+            --border: #e3e5e8;
+            --shadow: 0 4px 24px rgba(79,140,255,0.10);
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg-light);
+            color: var(--text-light);
+            transition: background 0.3s, color 0.3s;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--primary);
+            user-select: none;
+            background: none;
+            border: none;
+            padding: 0.3rem 0.7rem;
+        }
+        .theme-toggle-space {
+            height: 48px;
+            width: 100%;
+        }
+        .container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            background: var(--bg-light);
+        }
+        .chat-list {
+            width: 260px;
+            background: var(--input-bg-light);
+            border-right: 1.5px solid var(--border);
+            padding: 2rem 1.2rem 2rem 1.2rem;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+        .chat-list h2 {
+            margin: 0 0 1.2rem 0;
+            font-size: 1.25rem;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .chat-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .chat-list li {
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--primary);
+            background: #f0f4ff;
+            transition: background 0.2s, color 0.2s;
+            border: 1px solid var(--border);
+        }
+        .chat-list li.active,
+        .chat-list li:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        .chat-list .sidebar-btn {
+            display: block;
+            width: 100%;
+            margin-bottom: 0.7rem;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .chat-list .sidebar-btn.dashboard {
+            background: #fff;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+            margin-bottom: 1.2rem;
+        }
+        .chat-list .sidebar-btn.dashboard:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        .chat-list .sidebar-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px) scale(1.03);
+        }
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 2.5vw 2rem 2.5vw;
+            background: var(--input-bg-light);
+            box-shadow: 0 2px 8px rgba(79,140,255,0.06);
+            position: relative;
+        }
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+            padding-right: 0.5rem;
+        }
+        .message {
+            margin-bottom: 18px;
+            max-width: 70%;
+            padding: 0.9rem 1.2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+            word-break: break-word;
+        }
+        .message.user {
+            background: var(--primary);
+            color: #fff;
+            margin-left: auto;
+            text-align: right;
+            border-bottom-right-radius: 2px;
+        }
+        .message.ai {
+            background: #f0f4ff;
+            color: #222;
+            margin-right: auto;
+            text-align: left;
+            border-bottom-left-radius: 2px;
+        }
+        .input-area {
+            display: flex;
+            gap: 1rem;
+            background: var(--input-bg-light);
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+            padding: 0.7rem 1rem;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1.5px solid var(--border);
+            outline: none;
+            background: #f6f7fb;
+            color: var(--text-light);
+            transition: border 0.2s;
+        }
+        .input-area input:focus {
+            border-color: var(--primary);
+        }
+        .input-area button {
+            padding: 0.7rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+        }
+        .input-area button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px) scale(1.03);
+        }
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+            .chat-list {
+                width: 100vw;
+                border-right: none;
+                border-bottom: 1.5px solid var(--border);
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 1rem 0.5rem;
+                overflow-x: auto;
+            }
+            .chat-area {
+                padding: 1rem 2vw 1rem 2vw;
+            }
+        }
+        @media (max-width: 600px) {
+            .chat-area {
+                padding: 0.7rem 0.7rem;
+            }
+            .chat-list {
+                padding: 0.7rem 0.7rem;
+            }
+            .theme-toggle {
+                top: 0.7rem;
+                right: 0.7rem;
+            }
+            .theme-toggle-space {
+                height: 36px;
+            }
+        }
+        /* Dark theme */
+        body.dark {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+        body.dark .container,
+        body.dark .chat-area,
+        body.dark .chat-list {
+            background: var(--input-bg-dark);
+            color: var(--text-dark);
+        }
+        body.dark .chat-list li {
+            background: #23283a;
+            color: #8ab4f8;
+            border-color: #353945;
+        }
+        body.dark .chat-list li.active,
+        body.dark .chat-list li:hover {
+            background: #4f8cff;
+            color: #fff;
+        }
+        body.dark .chat-list .sidebar-btn.dashboard {
+            background: #23283a;
+            color: #8ab4f8;
+            border-color: #8ab4f8;
+        }
+        body.dark .chat-list .sidebar-btn.dashboard:hover {
+            background: #4f8cff;
+            color: #fff;
+        }
+        body.dark .message.ai {
+            background: #23283a;
+            color: #f6f7fa;
+        }
+        body.dark .input-area {
+            background: #23283a;
+        }
+        body.dark .input-area input {
+            background: #181c25;
+            color: #f6f7fa;
+            border-color: #353945;
+        }
+        body.dark .input-area button {
+            background: #8ab4f8;
+            color: #23272f;
+        }
+        body.dark .input-area button:hover {
+            background: #4f8cff;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        🌙
+    </button>
+        <div class="chat-list">
+            <button class="sidebar-btn dashboard" onclick="window.location.href='/chat/dashboard'">Dashboard</button>
+            <button class="sidebar-btn" onclick="createNewChat()">+ New Chat</button>
+            <h2>Chats</h2>
+            <ul id="chatList">
+                <!-- Chat list items will be rendered here -->
+            </ul>
+        </div>
+        <div style="margin-top: 70px;" class="chat-area">
+            <div class="messages" id="messages">
+                <!-- Messages will be rendered here -->
+            </div>
+            <form class="input-area" id="chatForm">
+                <input type="text" id="chatInput" placeholder="Ask AI..." autocomplete="off" required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Theme toggle logic
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        function setTheme(dark) {
+            if (dark) {
+                body.classList.add('dark');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setTheme(savedTheme === 'dark' || (!savedTheme && prefersDark));
+        themeToggle.addEventListener('click', () => {
+            const isDark = !body.classList.contains('dark');
+            setTheme(isDark);
+        });
+
+        // Dummy data for chat list and messages
+        let chats = {{ all_chats | tojson }}
+        let messags = {{ messages | tojson }}
+        const ai_auth_key = '{{ api_key }}'
+
+        console.log(ai_auth_key)
+
+        function renderChatList() {
+            const chatList = document.getElementById('chatList');
+            const pathname = window.location.pathname;
+            const pathSegments = pathname.split('/');
+            const chatId = pathSegments[2]
+
+            chatList.innerHTML = '';
+            chats.forEach(chat => {
+                const li = document.createElement('li');
+                li.textContent = chat.name;
+                li.className = chat.id === chatId ? 'active' : '';
+                li.onclick = () => {
+                    window.location.href = `/chat/${chat.id}`
+                };
+                chatList.appendChild(li);
+            });
+        }
+
+        function renderMessages() {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+            messags.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'message ' + msg.sender;
+                div.textContent = msg.content;
+                messagesDiv.appendChild(div);
+            });
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        document.getElementById('chatForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            // Add user message
+            const pathname = window.location.pathname;
+            const pathSegments = pathname.split('/');
+            const chatId = pathSegments[2]
+    
+            messags.push({sender: "user", content: text});
+            renderMessages();
+            input.value = '';
+
+
+            // Send to backend via fetch POST
+            fetch(`/chat/${chatId}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${ai_auth_key}`},
+                body: JSON.stringify({message: text})
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Add AI response
+                messags.push({sender: "ai", content: data.ai_res});
+                renderMessages();
+            })
+            .catch(() => {
+                messags.push({sender: "ai", content: "Sorry, there was an error generating the response."});
+                renderMessages();
+            });
+        });
+
+        // Initial render
+        renderChatList();
+        renderMessages();
+    </script>
+</body>
+</html>
