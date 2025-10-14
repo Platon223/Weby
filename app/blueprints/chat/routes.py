@@ -26,7 +26,7 @@ def chat(chat_id):
         if history:
 
             for message in history:
-                messages.append({'role': 'user' if message.sender == 'user' else 'bot', 'content': message.content})
+                messages.append({'role': 'user' if message.sender == 'user' else 'system', 'content': message.content})
                 messages.append({'role': 'user', 'content': user_message})
         else:
             messages.append({'role': 'user', 'content': user_message})
