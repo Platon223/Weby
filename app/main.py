@@ -16,7 +16,7 @@ def create_app():
     app = Flask(__name__, template_folder='templates')
     app.secret_key = '6424SecureKey'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./testdb.db'
-    openai.api_key = "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"
+    openai.api_key = "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"
 
     bcrypt.init_app(app)
 
