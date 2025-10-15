@@ -355,6 +355,7 @@
             const lastMessage = messags[messags.length - 1];
             const twoDimLastMessageArray = [];
             const lastMessageWords = lastMessage.content.split(" ");
+            let totalDelay = 0;
             for (let i = 0; i < lastMessageWords.length; i++) {
                 twoDimLastMessageArray.push(lastMessageWords[i].split(''));
             }
@@ -368,7 +369,9 @@
                             setTimeout(() => {
                                 div.textContent += letterIndex === 0 ? ` ${letter}` : `${letter}`;
                                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                            }, 10 * (wordIndex * 10 + letterIndex));
+                            }, totalDelay);
+
+                            totalDelay += 20;
                         })
                     })
                 } else {
