@@ -352,11 +352,32 @@
         function renderMessages() {
             const messagesDiv = document.getElementById('messages');
             messagesDiv.innerHTML = '';
-            messags.forEach(msg => {
-                const div = document.createElement('div');
-                div.className = 'message ' + msg.sender;
-                div.textContent = msg.content;
-                messagesDiv.appendChild(div);
+            const lastMessage = messags[messags.length - 1];
+            const twoDimLastMessageArray = [];
+            const lastMessageWords = lastMessage.content.split(" ");
+            for (let i = 0; i < lastMessageWords.length; i++) {
+                twoDimLastMessageArray.push(lastMessageWords[i].split(''));
+            }
+            messags.forEach((msg, index) => {
+                if (index === messags.length - 1 && msg.effect) {
+                    const div = document.createElement('div');
+                    div.className = 'message ' + msg.sender;
+                    messagesDiv.appendChild(div);
+                    twoDimLastMessageArray.forEach((word, wordIndex) => {
+                        word.forEach((letter, letterIndex) => {
+                            setTimeout(() => {
+                                div.textContent += letterIndex === 0 ? ` ${letter}` : `${letter}`;
+                                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                            }, 80 * (wordIndex * 10 + letterIndex));
+                        })
+                    })
+                } else {
+                    const div = document.createElement('div');
+                    div.className = 'message ' + msg.sender;
+                    div.textContent = msg.content;
+                    messagesDiv.appendChild(div);
+                    
+                }
             });
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
@@ -371,7 +392,7 @@
             const pathSegments = pathname.split('/');
             const chatId = pathSegments[2]
     
-            messags.push({sender: "user", content: text});
+            messags.push({sender: "user", content: text, effect: false});
             renderMessages();
             input.value = '';
 
@@ -385,11 +406,11 @@
             .then(response => response.json())
             .then(data => {
                 // Add AI response
-                messags.push({sender: "ai", content: data.ai_res});
+                messags.push({sender: "ai", content: data.ai_res, effect: true});
                 renderMessages();
             })
             .catch(() => {
-                messags.push({sender: "ai", content: "Sorry, there was an error generating the response."});
+                messags.push({sender: "ai", content: "Sorry, there was an error generating the response.", effect: true});
                 renderMessages();
             });
         });
