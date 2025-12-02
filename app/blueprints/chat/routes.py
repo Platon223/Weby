@@ -48,7 +48,7 @@ def chat(chat_id):
             messages_data_converted = [msg.to_dict() for msg in messages]
             
 
-            chats = Chat.query.all()
+            chats = Chat.query.filter_by(user_name=current_user.username).all()
             chats_data_converted = [cht.to_dict() for cht in chats]
             
             
@@ -87,7 +87,7 @@ def chat(chat_id):
 @login_required
 def dashboard():
     if request.method == 'GET':
-        return render_template('chat/dashboard.html', chats=Chat.query.all())
+        return render_template('chat/dashboard.html', chats=Chat.query.filter_by(user_name=current_user.username).all())
     elif request.method == 'POST':
         data = request.get_json()
         new_chat_name = data.get('name')
