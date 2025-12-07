@@ -44,6 +44,13 @@
             align-items: center;
             border: 1px solid var(--border);
         }
+
+        .logo-img {
+            width: 300px;       
+            margin: 0 auto 50px; 
+            display: block;
+            border-radius: 30px;
+        }
         .login-container h2 {
             margin-bottom: 1.5rem;
             font-weight: 600;
@@ -123,6 +130,7 @@
         </svg>
     </button>
     <div class="login-container">
+        <img class="logo-img" src="https://i.imgur.com/qycejJc.jpeg" alt="" srcset="" referrerpolicy="no-referrer">
         <h2>Login to Weby</h2>
         <form method="POST" action="{{ url_for('auth.login') }}">
             <input type="text" name="username" placeholder="Username" required autocomplete="username">
