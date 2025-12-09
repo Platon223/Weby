@@ -1,0 +1,21 @@
+name: Sync to GitLab
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Push to GitLab
+        run: |
+          git config --global user.email "github@sync.com"
+          git config --global user.name "GitHub Sync"
+
+          git remote add gitlab https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/Platon223/ci-pipeline-for-wuby.git
+          git push gitlab main --force
+
