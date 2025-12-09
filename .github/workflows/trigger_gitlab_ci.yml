@@ -16,4 +16,4 @@ jobs:
             curl --request POST 
             --form token=${{ secrets.GITLAB_TRIGGER_TOKEN }} 
             --form ref=main # Must be the branch name you are pushing to
-            gitlab.com76963714/trigger/pipeline
+            https://gitlab.com76963714/trigger/pipeline
