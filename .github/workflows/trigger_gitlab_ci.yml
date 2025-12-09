@@ -1,0 +1,19 @@
+name: Trigger GitLab CI Pipeline
+
+on:
+  push:
+    branches:
+      - main # Or whatever your default branch is
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger GitLab CI
+        uses: appleboy/curl-action@v1.0.0
+        with:
+          command: >
+            curl --request POST 
+            --form token=${{ secrets.GITLAB_TRIGGER_TOKEN }} 
+            --form ref=main # Must be the branch name you are pushing to
+            gitlab.com<YOUR_GITLAB_PROJECT_ID>/trigger/pipeline
